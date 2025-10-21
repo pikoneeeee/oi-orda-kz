@@ -26,7 +26,7 @@ def admin_required(f):
 
         if current_user.role != 'admin':
             flash('У вас нет доступа к админ-панели', 'error')
-            return redirect(url_for('index'))
+            return redirect(url_for('public.index'))
 
         return f(*args, **kwargs)
 
@@ -45,7 +45,7 @@ def dashboard():
     admin_profile = current_user.admin
     if not admin_profile:
         flash('Профиль администратора не найден', 'error')
-        return redirect(url_for('index'))
+        return redirect(url_for('public.index'))
 
     school = admin_profile.school
 
@@ -154,11 +154,11 @@ def classrooms():
         return redirect(url_for('admin.dashboard'))
 
     school = admin_profile.school
-    classrooms = Classroom.query.filter_by(school_id=school.id).order_by(Classroom.grade, Classroom.name).all()
+    classrooms_list = Classroom.query.filter_by(school_id=school.id).order_by(Classroom.grade, Classroom.name).all()
 
     return render_template('admin/classrooms.html',
                            school=school,
-                           classrooms=classrooms)
+                           classrooms=classrooms_list)
 
 
 @admin_bp.route('/api/user/<int:user_id>/reset-password', methods=['POST'])

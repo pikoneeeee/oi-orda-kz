@@ -46,3 +46,14 @@ class Config:
         "Ты — школьный психолог-помощник. Отвечай понятно и доброжелательно.",
     )
     AI_ORDA_MAX_TOKENS = int(os.getenv("AI_ORDA_MAX_TOKENS", "800"))
+
+    # ---- Admin Panel / File Upload ----
+    # Папка для загружаемых файлов (Excel, отчёты и т.д.)
+    UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+    # Максимальный размер загружаемого файла (50 MB)
+    MAX_CONTENT_LENGTH = int(os.getenv("MAX_CONTENT_LENGTH", "50")) * 1024 * 1024
+
+    # Допустимые расширения для загрузки
+    ALLOWED_EXTENSIONS = {"xlsx", "xls", "csv"}
