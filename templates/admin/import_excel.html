@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block title %}Импорт учеников и психолога{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <h1 class="mb-4">Импорт данных из Excel</h1>
+
+            <!-- Инструкция -->
+            <div class="alert alert-info">
+                <h5>Инструкция:</h5>
+                <ol>
+                    <li>Скачайте шаблон Excel файла ниже</li>
+                    <li>Заполните данные учеников и психолога</li>
+                    <li>Загрузите файл в систему</li>
+                    <li>Система автоматически создаст учетные записи</li>
+                </ol>
+            </div>
+
+            <!-- Форма загрузки -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Загрузить Excel файл</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="form-group mb-3">
+                            <label for="file" class="form-label">Выберите файл (.xlsx)</label>
+                            <input type="file" class="form-control" id="file" name="file"
+                                   accept=".xlsx,.xls" required>
+                            <small class="form-text text-muted">
+                                Допустимые форматы: .xlsx, .xls
+                            </small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-upload"></i> Загрузить и импортировать
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Скачивание шаблона -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Шаблон файла</h5>
+                </div>
+                <div class="card-body">
+                    <p>Скачайте шаблон Excel файла для заполнения данных:</p>
+                    <a href="#" class="btn btn-secondary" onclick="downloadTemplate()">
+                        <i class="bi bi-download"></i> Скачать шаблон
+                    </a>
+                </div>
+            </div>
+
+            <!-- Результаты импорта -->
+            {% if result %}
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Результаты импорта</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success">
+                        <strong>Импорт завершен!</strong>
+                    </div>
+
+                    <!-- Новые классы -->
+                    {% if result.new_classrooms %}
+                    <div class="mb-3">
+                        <h6>Созданные классы:</h6>
+                        <ul class="list-group">
+                            {% for classroom in result.new_classrooms %}
+                            <li class="list-group-item">{{ classroom }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <!-- Ученики -->
+                    {% if result.students %}
+                    <div class="mb-3">
+                        <h6>Созданные ученики ({{ result.students|length }}):</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ФИ</th>
+                                        <th>Email</th>
+                                        <th>Класс</th>
+                                        <th>Пароль</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in result.students %}
+                                    <tr>
+                                        <td>{{ student.full_name }}</td>
+                                        <td>{{ student.email }}</td>
+                                        <td>{{ student.class }}</td>
+                                        <td>
+                                            <code>{{ student.password }}</code>
+                                            <button class="btn btn-sm btn-outline-secondary"
+                                                    onclick="copyToClipboard('{{ student.password }}')">
+                                                <i class="bi bi-clipboard"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="alert alert-warning">
+                            <strong>⚠️ Важно!</strong> Поделитесь пароли со учениками.
+                            Они смогут изменить их при первом входе.
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Психолог -->
+                    {% if result.psychologist %}
+                    <div class="mb-3">
+                        <h6>Психолог:</h6>
+                        <div class="alert alert-info">
+                            <strong>{{ result.psychologist.full_name }}</strong><br>
+                            Email: <code>{{ result.psychologist.email }}</code><br>
+                            Пароль:
+                            <code>{{ result.psychologist.password }}</code>
+                            <button class="btn btn-sm btn-outline-secondary ms-2"
+                                    onclick="copyToClipboard('{{ result.psychologist.password }}')">
+                                <i class="bi bi-clipboard"></i> Копировать
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Скачать отчет -->
+                    <button class="btn btn-sm btn-outline-primary" onclick="printResults()">
+                        <i class="bi bi-printer"></i> Печать/Скачать
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Ошибки -->
+            {% if errors %}
+            <div class="card border-warning">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0">Ошибки при импорте</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        {{ errors|length }} проблем(ы) при импорте
+                    </div>
+                    <ul>
+                        {% for error in errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Справка о формате файла -->
+        <div class="col-lg-4">
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-header">
+                    <h5 class="mb-0">Справка</h5>
+                </div>
+                <div class="card-body" style="font-size: 0.9rem;">
+                    <h6>Лист "Ученики"</h6>
+                    <p class="mb-2"><strong>Колонки:</strong></p>
+                    <ul class="ps-3 mb-3">
+                        <li><code>Фамилия</code> - обязательно</li>
+                        <li><code>Имя</code> - обязательно</li>
+                        <li><code>Отчество</code> - опционально</li>
+                        <li><code>Email</code> - обязательно, уникальный</li>
+                        <li><code>Класс</code> - обязательно (например, 9А)</li>
+                        <li><code>Класс номер</code> - обязательно (7-11)</li>
+                        <li><code>Пол</code> - опционально (М/Ж)</li>
+                    </ul>
+
+                    <h6>Лист "Психолог"</h6>
+                    <p class="mb-2"><strong>Колонки:</strong></p>
+                    <ul class="ps-3">
+                        <li><code>Фамилия</code> - обязательно</li>
+                        <li><code>Имя</code> - обязательно</li>
+                        <li><code>Отчество</code> - опционально</li>
+                        <li><code>Email</code> - обязательно</li>
+                    </ul>
+
+                    <div class="alert alert-info mt-3" style="font-size: 0.85rem;">
+                        <strong>Подсказка:</strong> Email должны быть уникальными
+                        в системе. Если email уже существует, ученик будет пропущен.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function downloadTemplate() {
+    // Генерируем простой Excel файл с помощью JavaScript
+    const link = document.createElement('a');
+    link.href = '/static/templates/import_template.xlsx';
+    link.download = 'template_import.xlsx';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Пароль скопирован в буфер обмена!');
+    });
+}
+
+function printResults() {
+    window.print();
+}
+</script>
+{% endblock %}

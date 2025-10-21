@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Админ-панель{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <h1>Админ-панель</h1>
+            <p class="text-muted">Школа: <strong>{{ school.name }}</strong></p>
+        </div>
+        <div class="col-lg-4 text-end">
+            <a href="{{ url_for('admin.import_excel') }}" class="btn btn-primary">
+                <i class="bi bi-upload"></i> Импортировать из Excel
+            </a>
+        </div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Учеников</h6>
+                    <h2 class="card-text">{{ total_students }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Классов</h6>
+                    <h2 class="card-text">{{ total_classrooms }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Психологов</h6>
+                    <h2 class="card-text">{{ total_psychologists }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Тестов</h6>
+                    <h2 class="card-text">0</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Основные действия -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Управление</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('admin.users') }}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-people"></i> Пользователи
+                        <span class="badge bg-secondary float-end">{{ total_students + total_psychologists }}</span>
+                    </a>
+                    <a href="{{ url_for('admin.classrooms') }}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-building"></i> Классы
+                        <span class="badge bg-secondary float-end">{{ total_classrooms }}</span>
+                    </a>
+                    <a href="{{ url_for('admin.import_excel') }}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-file-earmark-excel"></i> Импорт данных
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Справка</h5>
+                </div>
+                <div class="card-body" style="font-size: 0.95rem;">
+                    <h6>Как начать:</h6>
+                    <ol class="ps-3">
+                        <li>Перейдите в раздел <strong>Импорт данных</strong></li>
+                        <li>Загрузите Excel файл с учениками и психологом</li>
+                        <li>Система автоматически создаст аккаунты</li>
+                        <li>Поделитесь пароли со учениками</li>
+                    </ol>
+
+                    <hr>
+
+                    <h6>Быстрые ссылки:</h6>
+                    <ul class="ps-3 mb-0">
+                        <li><a href="{{ url_for('admin.users') }}">Список пользователей</a></li>
+                        <li><a href="{{ url_for('admin.classrooms') }}">Список классов</a></li>
+                        <li><a href="{{ url_for('admin.import_excel') }}">Загрузить Excel</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Последние действия -->
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Информация по школе</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">Название школы:</dt>
+                        <dd class="col-sm-9">{{ school.name }}</dd>
+
+                        <dt class="col-sm-3">Город:</dt>
+                        <dd class="col-sm-9">{{ school.city or 'Не указан' }}</dd>
+
+                        <dt class="col-sm-3">Всего учеников:</dt>
+                        <dd class="col-sm-9">{{ total_students }}</dd>
+
+                        <dt class="col-sm-3">Всего классов:</dt>
+                        <dd class="col-sm-9">{{ total_classrooms }}</dd>
+
+                        <dt class="col-sm-3">Психологов:</dt>
+                        <dd class="col-sm-9">{{ total_psychologists }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        border: none;
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    h1 {
+        font-weight: 600;
+        color: #212529;
+    }
+</style>
+{% endblock %}

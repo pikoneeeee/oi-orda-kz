@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}Пользователи{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <h1>Пользователи школы</h1>
+            <p class="text-muted">{{ school.name }}</p>
+        </div>
+        <div class="col-lg-4 text-end">
+            <a href="{{ url_for('admin.import_excel') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Добавить пользователей
+            </a>
+        </div>
+    </div>
+
+    <!-- Навигация по табам -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="students-tab" data-bs-toggle="tab"
+                    data-bs-target="#students" type="button" role="tab">
+                <i class="bi bi-person-fill"></i> Ученики ({{ students|length }})
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="psychologists-tab" data-bs-toggle="tab"
+                    data-bs-target="#psychologists" type="button" role="tab">
+                <i class="bi bi-heart-fill"></i> Психологи ({{ psychologists|length }})
+            </button>
+        </li>
+    </ul>
+
+    <!-- Содержимое табов -->
+    <div class="tab-content">
+        <!-- Ученики -->
+        <div class="tab-pane fade show active" id="students" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Список учеников</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Email</th>
+                                <th>Класс</th>
+                                <th>Класс номер</th>
+                                <th>Дата создания</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if students %}
+                                {% for student in students %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ student.user.email }}</strong>
+                                    </td>
+                                    <td>
+                                        {% if student.classroom %}
+                                            <span class="badge bg-primary">{{ student.classroom.name }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Не назначен</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ student.grade }}</td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ student.user.created_at.strftime('%d.%m.%Y %H:%M') }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning"
+                                                onclick="resetPassword({{ student.user.id }}, '{{ student.user.email }}')">
+                                            <i class="bi bi-key"></i> Сбросить пароль
+                                        </button>
+                                        <button class="btn btn-sm btn-danger"
+                                                onclick="deleteUser({{ student.user.id }}, '{{ student.user.email }}')">
+                                            <i class="bi bi-trash"></i> Удалить
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">
+                                        Нет учеников. <a href="{{ url_for('admin.import_excel') }}">Импортируйте данные из Excel</a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Психологи -->
+        <div class="tab-pane fade" id="psychologists" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Список психологов</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Email</th>
+                                <th>Школа</th>
+                                <th>Дата создания</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if psychologists %}
+                                {% for psych in psychologists %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ psych.user.email }}</strong>
+                                    </td>
+                                    <td>{{ psych.school.name }}</td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ psych.user.created_at.strftime('%d.%m.%Y %H:%M') }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning"
+                                                onclick="resetPassword({{ psych.user.id }}, '{{ psych.user.email }}')">
+                                            <i class="bi bi-key"></i> Сбросить пароль
+                                        </button>
+                                        <button class="btn btn-sm btn-danger"
+                                                onclick="deleteUser({{ psych.user.id }}, '{{ psych.user.email }}')">
+                                            <i class="bi bi-trash"></i> Удалить
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">
+                                        Нет психологов. <a href="{{ url_for('admin.import_excel') }}">Добавьте психолога через импорт</a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal для сброса пароля -->
+<div class="modal fade" id="resetPasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Сброс пароля</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены что хотите сбросить пароль для <strong id="resetEmail"></strong>?</p>
+                <p class="text-muted">Пользователю будет отправлена ссылка для восстановления пароля.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-warning" onclick="confirmReset()">Сбросить пароль</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal для удаления пользователя -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Удаление пользователя</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <strong>Внимание!</strong> Это действие необратимо!
+                </div>
+                <p>Вы уверены что хотите удалить пользователя <strong id="deleteEmail"></strong>?</p>
+                <p class="text-muted">Все данные пользователя будут удалены из системы.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">Удалить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentUserId = null;
+
+function resetPassword(userId, email) {
+    currentUserId = userId;
+    document.getElementById('resetEmail').textContent = email;
+    new bootstrap.Modal(document.getElementById('resetPasswordModal')).show();
+}
+
+function confirmReset() {
+    fetch(`/admin/api/user/${currentUserId}/reset-password`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Новый пароль: ${data.new_password}\n\nПопросите пользователя изменить его при первом входе.`);
+            bootstrap.Modal.getInstance(document.getElementById('resetPasswordModal')).hide();
+            location.reload();
+        } else {
+            alert('Ошибка: ' + data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function deleteUser(userId, email) {
+    currentUserId = userId;
+    document.getElementById('deleteEmail').textContent = email;
+    new bootstrap.Modal(document.getElementById('deleteUserModal')).show();
+}
+
+function confirmDelete() {
+    fetch(`/admin/api/user/${currentUserId}/delete`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Пользователь удален');
+            bootstrap.Modal.getInstance(document.getElementById('deleteUserModal')).hide();
+            location.reload();
+        } else {
+            alert('Ошибка: ' + data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}

@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}Классы{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <h1>Классы школы</h1>
+            <p class="text-muted">{{ school.name }}</p>
+        </div>
+        <div class="col-lg-4 text-end">
+            <a href="{{ url_for('admin.import_excel') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Добавить классы
+            </a>
+        </div>
+    </div>
+
+    <!-- Статистика классов -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Всего классов</h6>
+                    <h2 class="card-text">{{ classrooms|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Средний размер класса</h6>
+                    <h2 class="card-text">
+                        {% if classrooms|length > 0 %}
+                            {{ (students_total / classrooms|length)|round(0)|int }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Классы с учениками</h6>
+                    <h2 class="card-text">
+                        {% set filled_classrooms = classrooms|selectattr('students')|list %}
+                        {{ filled_classrooms|length }}
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Таблица классов -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Список классов</h5>
+        </div>
+
+        {% if classrooms %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Класс</th>
+                        <th>Номер класса</th>
+                        <th>Учеников</th>
+                        <th>Психолог</th>
+                        <th>Дата создания</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for classroom in classrooms|sort(attribute='grade') %}
+                    <tr>
+                        <td>
+                            <h6 class="mb-0">
+                                <span class="badge bg-info">{{ classroom.name }}</span>
+                            </h6>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">{{ classroom.grade }}</span>
+                        </td>
+                        <td>
+                            {% set students_count = classroom.students|length %}
+                            <strong>{{ students_count }}</strong>
+                            <small class="text-muted">ученик(ов)</small>
+                        </td>
+                        <td>
+                            {% set has_psychologist = false %}
+                            {% for student in classroom.students %}
+                                {% if student.school.psychologists|length > 0 %}
+                                    {% set has_psychologist = true %}
+                                    <span class="badge bg-success">Есть</span>
+                                {% endif %}
+                            {% endfor %}
+                            {% if not has_psychologist %}
+                                <span class="badge bg-warning">Нет</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small class="text-muted">
+                                {{ classroom.created_at.strftime('%d.%m.%Y') }}
+                            </small>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-info"
+                                    onclick="viewClassroom('{{ classroom.name }}', {{ students_count }})">
+                                <i class="bi bi-eye"></i> Просмотр
+                            </button>
+                            <button class="btn btn-sm btn-danger"
+                                    onclick="deleteClassroom({{ classroom.id }}, '{{ classroom.name }}')">
+                                <i class="bi bi-trash"></i> Удалить
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="card-body text-center text-muted py-5">
+            <i class="bi bi-inbox" style="font-size: 3rem; opacity: 0.5;"></i>
+            <p class="mt-3">Нет классов. <a href="{{ url_for('admin.import_excel') }}">Импортируйте данные из Excel</a></p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Группировка по классам (по номерам) -->
+    {% if classrooms %}
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Распределение по классам</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% set grades = {} %}
+                        {% for classroom in classrooms %}
+                            {% set _ = grades.setdefault(classroom.grade, []).append(classroom) %}
+                        {% endfor %}
+
+                        {% for grade in grades|sort %}
+                        <div class="col-md-6 col-lg-3 mb-3">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="bi bi-book"></i> Класс {{ grade }}
+                                    </h6>
+                                    <hr>
+                                    <div class="list-unstyled">
+                                        {% for classroom in grades[grade] %}
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span>
+                                                <span class="badge bg-primary">{{ classroom.name }}</span>
+                                            </span>
+                                            <span class="badge bg-secondary">
+                                                {{ classroom.students|length }}
+                                            </span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal для просмотра класса -->
+<div class="modal fade" id="viewClassroomModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Класс <span id="classroomName"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Учеников в классе: <strong id="classroomStudents"></strong></p>
+                <p class="text-muted">Дополнительная информация может быть добавлена позже.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal для удаления класса -->
+<div class="modal fade" id="deleteClassroomModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Удаление класса</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <strong>Внимание!</strong> Это действие необратимо!
+                </div>
+                <p>Вы уверены что хотите удалить класс <strong id="deleteClassroomName"></strong>?</p>
+                <p class="text-muted">Все данные класса будут удалены.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">Удалить класс</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentClassroomId = null;
+
+function viewClassroom(name, students) {
+    document.getElementById('classroomName').textContent = name;
+    document.getElementById('classroomStudents').textContent = students;
+    new bootstrap.Modal(document.getElementById('viewClassroomModal')).show();
+}
+
+function deleteClassroom(classroomId, name) {
+    currentClassroomId = classroomId;
+    document.getElementById('deleteClassroomName').textContent = name;
+    new bootstrap.Modal(document.getElementById('deleteClassroomModal')).show();
+}
+
+function confirmDelete() {
+    if (currentClassroomId) {
+        alert('Функция удаления класса будет добавлена в следующей версии');
+        bootstrap.Modal.getInstance(document.getElementById('deleteClassroomModal')).hide();
+    }
+}
+</script>
+
+<style>
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}
