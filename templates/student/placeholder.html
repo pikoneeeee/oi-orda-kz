@@ -1,0 +1,16 @@
+{# templates/student/placeholder.html #}
+{% extends "base.html" %}
+
+{# В шапке показываем студентский хедер вместо публичного меню #}
+{% block navbar %}
+  {% include "student/_header.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container-lg py-4">
+  <h1 class="h4 mb-3">{{ title or "Раздел" }}</h1>
+  <div class="alert alert-info">
+    Раздел <strong>{{ title or active or "…" }}</strong> в разработке.
+  </div>
+</div>
+{% endblock %}

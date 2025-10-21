@@ -1,0 +1,62 @@
+{% set act = active or '' %}
+<nav class="navbar navbar-expand bg-body border-bottom sticky-top student-nav">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="{{ url_for('student.dashboard') }}">oi-orda</a>
+
+    <ul class="navbar-nav gap-lg-4 gap-2 mx-auto align-items-center app-nav">
+      <li class="nav-item">
+        <a class="nav-link {{ 'active' if act=='tests' }}" href="{{ url_for('student.tests') }}">
+          <i class="bi bi-ui-checks-grid me-2"></i> Тесты
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {{ 'active' if act=='professions' }}" href="{{ url_for('student.professions') }}">
+          <i class="bi bi-collection me-2"></i> Профессии
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {{ 'active' if act=='universities' }}" href="{{ url_for('student.universities') }}">
+          <i class="bi bi-mortarboard me-2"></i> Университеты
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {{ 'active' if act=='analysis' }}" href="{{ url_for('student.my_results') }}">
+          <i class="bi bi-graph-up me-2"></i> Анализ
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="btn btn-outline-primary btn-sm ms-lg-2" href="{{ safe_url_for('student.ai_orda') }}">
+          <i class="bi bi-stars me-1"></i> AI-Orda
+        </a>
+      </li>
+    </ul>
+
+    <div class="d-flex align-items-center gap-2">
+      <div class="dropdown">
+        <button class="btn btn-light border dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
+          <span class="me-1">🇷🇺</span> Ru
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="#">🇰🇿 Kz</a></li>
+          <li><a class="dropdown-item" href="#">🇷🇺 Ru</a></li>
+          <li><a class="dropdown-item" href="#">🇬🇧 En</a></li>
+        </ul>
+      </div>
+
+      <div class="dropdown">
+        <button class="btn btn-light border rounded-circle p-2" data-bs-toggle="dropdown" aria-label="Профиль">
+          <i class="bi bi-person"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li class="dropdown-header small">{{ current_user.email }}</li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <form method="post" action="{{ url_for('auth.logout') }}" class="px-3 py-1">
+              <button class="btn btn-outline-danger btn-sm w-100">Выйти</button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>

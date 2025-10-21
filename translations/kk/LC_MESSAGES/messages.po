@@ -1,0 +1,45 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: oi-orda\n"
+"Language: kk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: templates/base.html
+msgid "О нас"
+msgstr "Біз туралы"
+
+msgid "Продукт"
+msgstr "Өнім"
+
+msgid "Преимущества"
+msgstr "Артықшылықтар"
+
+msgid "Контакты"
+msgstr "Байланыс"
+
+msgid "Вход"
+msgstr "Кіру"
+
+msgid "Выйти"
+msgstr "Шығу"
+
+# Жалпы
+msgid "Начать тест"
+msgstr "Тесті бастау"
+
+msgid "Мои результаты"
+msgstr "Нәтижелерім"
+
+msgid "К другим тестам"
+msgstr "Басқа тесттерге оралу"
+
+msgid "Пожалуйста, выберите вариант."
+msgstr "Нұсқаны таңдаңыз."
+
+msgid "Результат"
+msgstr "Нәтиже"
+
+msgid "Пройти ещё один тест"
+msgstr "Тағы бір тест тапсыру"

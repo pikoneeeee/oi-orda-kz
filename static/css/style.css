@@ -1,0 +1,120 @@
+:root,[data-bs-theme=light]{
+  --brand-primary:#2F6AA0; --brand-secondary:#79B0C9; --brand-accent:#53C1A6;
+  --brand-bg:#F6F9FC; --brand-surface:#FFFFFF; --brand-text:#1F2A37; --brand-border:#E5E7EB;
+  --bs-primary: var(--brand-primary);
+  --bs-body-bg: var(--brand-bg);
+  --bs-body-color: var(--brand-text);
+  --bs-border-color: var(--brand-border);
+}
+.bg-gradient{ background:linear-gradient(135deg, rgba(47,106,160,.08), rgba(121,176,201,.08)); }
+
+html { scroll-behavior: smooth; }
+section[id] { scroll-margin-top: 90px; } /* чтобы заголовок не уезжал под меню */
+
+/* Hero */
+.hero-visual{ max-width:520px; filter: drop-shadow(0 10px 30px rgba(31,42,55,.12)); }
+.hero-phone{ border-radius:24px; }
+@media (min-width: 992px){
+  #hero{ padding-top:4.5rem; padding-bottom:4.5rem; }
+}
+
+/* about */
+.feature-icon{
+  width: 40px; height: 40px; display:flex; align-items:center; justify-content:center;
+  border-radius: 12px; background: rgba(47,106,160,.08); color: var(--brand-primary);
+  font-size: 1.1rem;
+}
+.stat-card{
+  background:#fff; border:1px solid var(--brand-border); border-radius:14px; padding:16px; text-align:center;
+}
+.stat-number{ font-weight:800; font-size:1.6rem; line-height:1; color:var(--brand-text); }
+.stat-label{ margin-top:4px; color:#6b7280; }
+.about-pill{
+  display:flex; align-items:center; justify-content:center;
+  gap:8px; padding:14px 18px; border-radius:14px;
+  background: rgba(83,193,166,.12); color:#0f5132; font-weight:600;
+}
+.principle{
+  border:1px dashed var(--brand-border); border-radius:999px; padding:6px 10px; background:#fff;
+}
+
+html { scroll-behavior: smooth; }
+section[id]{ scroll-margin-top: 90px; }
+
+.feature-icon{
+  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  border-radius:12px;background:rgba(47,106,160,.08);color:var(--brand-primary);
+  font-size:1.1rem;
+}
+.stat-card{ background:#fff;border:1px solid var(--brand-border);border-radius:14px;padding:16px;text-align:center; }
+.stat-number{ font-weight:800;font-size:1.6rem;line-height:1;color:var(--brand-text); }
+.stat-label{ margin-top:4px;color:#6b7280; }
+.about-pill{ display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 18px;border-radius:14px;background:rgba(83,193,166,.12);color:#0f5132;font-weight:600; }
+
+/* Product */
+.shot img{ display:block; }
+.feat{ background:#fff; border:1px solid var(--brand-border); }
+.feat-icon{
+  width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+  border-radius:12px;font-size:1.2rem;
+}
+/* дополнительная нежная тень для скриншотов */
+.shot{ filter: drop-shadow(0 8px 24px rgba(31,42,55,.08)); }
+
+/* Benefits */
+.benef-card{ background:#fff; border:1px solid var(--brand-border); }
+.benef-icon{
+  width:44px; height:44px; display:flex; align-items:center; justify-content:center;
+  border-radius:12px; font-size:1.2rem;
+}
+/* кастомный индиго, т.к. в Bootstrap его нет по умолчанию */
+.bg-indigo-100{ background:#e0e7ff !important; }
+.text-indigo-600{ color:#4f46e5 !important; }
+
+/* Contacts */
+.contact-card{ background:#fff; border:1px solid var(--brand-border); }
+.contact-icon{
+  width:44px; height:44px; display:flex; align-items:center; justify-content:center;
+  border-radius:12px; font-size:1.2rem;
+}
+
+/* Auth pages */
+.auth-hero{
+  border:1px solid var(--brand-border);
+  box-shadow: 0 10px 30px rgba(31,42,55,.06);
+  border-radius: 1.25rem;
+}
+.auth-card{
+  overflow: hidden;
+}
+.input-group-password .form-control{
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+.input-group-password .toggle-pass{
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+
+/* student navbar */
+.student-nav .navbar-brand{ font-weight:700; }
+.app-nav .nav-link{
+  font-weight:600; color:#334155;
+  display:flex; align-items:center;
+  padding:.5rem .75rem; border-radius:.75rem;
+}
+.app-nav .nav-link:hover{ background:rgba(47,106,160,.08); color:#2F6AA0; }
+.app-nav .nav-link.active{ color:#2F6AA0; background:rgba(47,106,160,.12); }
+
+.test-card { transition: transform .15s ease, box-shadow .15s ease; }
+.test-card:hover { transform: translateY(-2px); box-shadow: 0 .75rem 2rem rgba(0,0,0,.08); }
+.object-fit-cover { object-fit: cover; }
+
+.card-hover { transition: transform .2s ease, box-shadow .2s ease; border-radius: 1rem; }
+.card-hover:hover { transform: translateY(-2px); box-shadow: 0 .75rem 1.5rem rgba(20,20,20,.08); }
+.student-nav .app-nav .nav-link.active { font-weight: 600; }
+
+/* Пузыри чата чуть мягче */
+#chat-box .rounded-3 { border-radius: 1rem!important; }
+

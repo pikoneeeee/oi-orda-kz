@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{# Показываем ТОЛЬКО студенческую шапку на всех student-страницах #}
+{% block navbar %}
+  {# active может не прийти — зададим безопасное значение #}
+  {% set active = active if active is defined else '' %}
+  {% include "student/_header.html" %}
+{% endblock %}
+
+{# Контент конкретной страницы студента #}
+{% block content %}
+  {% block student_content %}{% endblock %}
+{% endblock %}

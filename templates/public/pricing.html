@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="fw-bold mb-3">Годовая подписка</h2>
+<div class="row g-4">
+  <div class="col-md-6 col-lg-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <div class="h4 fw-bold mb-2">{{ site_name }} — Школа</div>
+        <div class="display-6 fw-bold mb-3">₸ по запросу</div>
+        <ul class="small text-body-secondary mb-3">
+          <li>Ученики 7–11 классов</li>
+          <li>Кабинет психолога и отчёты</li>
+          <li>Роли: ученик / психолог / админ</li>
+        </ul>
+        <a class="btn btn-primary w-100" href="{{ url_for('auth.register_school') }}">Оформить школу</a>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="small text-body-secondary mt-3">Оплата/договор добавим на этапе платежей.</p>
+{% endblock %}

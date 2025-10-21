@@ -1,0 +1,41 @@
+{% extends "student/layout.html" %}
+{% block student_content %}
+
+<section class="py-4">
+  <div class="container">
+    <h2 class="fw-bold mb-3">Мои результаты</h2>
+
+    {% if attempts and attempts|length %}
+      <div class="list-group rounded-4 shadow-sm">
+        {% for a in attempts %}
+          {# безопасные значения #}
+          {% set started = a.started_at if a.started_at is defined and a.started_at
+                           else (a.created_at if a.created_at is defined and a.created_at
+                           else (a.created if a.created is defined and a.created else none)) %}
+          {% set mins = (a.duration_sec // 60) if a.duration_sec is defined and a.duration_sec is not none else none %}
+          {% set ttitle = (a.test.title if a.test and a.test.title else ('Тест #' ~ a.test_id)) %}
+          {% set tconf = a.test.confidential_student if a.test and (a.test.confidential_student is defined) else false %}
+
+          <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+             href="{{ url_for('student.attempt_result', attempt_id=a.id) }}">
+            <div class="me-3">
+              <div class="fw-semibold">{{ ttitle }}</div>
+              <div class="small text-body-secondary">
+                {{ started.strftime('%d.%m.%Y %H:%M') if started else '—' }}
+                {% if mins is not none %} · {{ mins }} мин{% endif %}
+                {% if tconf %}
+                  · <span class="text-warning">подробности видны психологу</span>
+                {% endif %}
+              </div>
+            </div>
+            <i class="bi bi-chevron-right"></i>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-body-secondary">Пока нет попыток.</p>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

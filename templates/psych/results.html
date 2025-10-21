@@ -1,0 +1,65 @@
+{% extends "psych/layout.html" %}
+{% block psych_content %}
+
+<section class="py-3">
+  <h1 class="h5 fw-bold mb-3">Попытки тестов</h1>
+
+  <div class="list-group rounded-4 shadow-sm">
+    {% if attempts %}
+      {% for row in attempts %}
+        {# Поддержка двух форматов: (attempt, test, user) ИЛИ просто attempt #}
+        {% if row is sequence and row|length >= 3 %}
+          {% set a = row[0] %}
+          {% set t = row[1] %}
+          {% set u = row[2] %}
+        {% else %}
+          {% set a = row %}
+          {% set t = a.test if a.test is defined else None %}
+          {% set u = a.user if a.user is defined else None %}
+        {% endif %}
+
+        {# Статус/дата #}
+        {% set is_done = a.finished_at is not none %}
+        {% set when = a.finished_at or (a.started_at if a.started_at is defined else None) or (a.created_at if a.created_at is defined else None) %}
+        {% set when_str = when.strftime('%d.%m.%Y %H:%M') if when else '—' %}
+
+        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+           href="{{ url_for('psych.psych_attempt_view', attempt_id=a.id) }}">
+          <div class="me-3">
+            <div class="fw-semibold">{{ t.title if t and t.title else 'Без названия' }}</div>
+            <div class="small text-body-secondary">
+              {# Имя ученика #}
+              {% if u %}
+                {% if u|display_name is defined %}
+                  {{ u|display_name }}
+                {% else %}
+                  {{ (u.last_name ~ ' ' ~ u.first_name) if (u.last_name or u.first_name) else (u.name or u.email or ('#' ~ u.id)) }}
+                {% endif %}
+              {% endif %}
+              • {{ when_str }}
+              {# Процент, если есть #}
+              {% if a.score is defined and a.score is not none %}
+                • {{ a.score|int }}%
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            {% if is_done %}
+              <span class="badge text-bg-success">Завершено</span>
+            {% else %}
+              <span class="badge text-bg-secondary">В процессе</span>
+            {% endif %}
+            <i class="bi bi-chevron-right"></i>
+          </div>
+        </a>
+      {% endfor %}
+    {% else %}
+      <div class="list-group-item text-body-secondary">
+        Пока нет попыток.
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

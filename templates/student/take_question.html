@@ -1,0 +1,107 @@
+{% extends "student/layout.html" %}
+{% block title %}Вопрос {{ order }} — {{ test.title }}{% endblock %}
+{% block student_content %}
+
+{# Совместимость имён: если приходит question/selected_option_id — подставим в q/chosen_id #}
+{% set q = q if q is defined else question %}
+{% set chosen_id = chosen_id if chosen_id is defined else selected_option_id %}
+{% set progress = ((order|float / (total or 1)|float) * 100) | round(0) %}
+
+<div class="container py-4">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div class="small text-body-secondary">Вопрос {{ order }} из {{ total }}</div>
+    {% if ends_at %}
+      <div class="small text-body-secondary">
+        <i class="bi bi-hourglass-split me-1"></i>
+        Осталось: <span id="left">--:--</span>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="progress mb-4" style="height:8px;">
+    <div class="progress-bar" role="progressbar"
+         style="width: {{ progress }}%;" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4 p-lg-5">
+      <h4 class="mb-4">{{ q.text }}</h4>
+
+      {# ВАЖНО: отправляем ответы на tests.answer #}
+      <form method="post" action="{{ url_for('tests.answer', slug=test.slug) }}" class="vstack gap-2">
+        <input type="hidden" name="attempt_id" value="{{ attempt.id }}">
+        <input type="hidden" name="question_id" value="{{ q.id }}">
+        <input type="hidden" name="order" value="{{ order }}">
+
+        {% for o in options %}
+          <label class="form-check p-0">
+            <input
+              class="btn-check"
+              type="radio"
+              name="option_id"
+              id="opt{{ o.id }}"
+              value="{{ o.id }}"
+              {% if loop.first and not chosen_id %}required{% endif %}
+              {% if chosen_id == o.id %}checked{% endif %}
+            >
+            <span class="btn btn-outline-secondary w-100 text-start py-3 px-3 d-flex align-items-center justify-content-between">
+              <span class="d-flex align-items-center">
+                <i class="bi {% if chosen_id == o.id %}bi-check-circle-fill{% else %}bi-circle{% endif %} me-2"></i>
+                {{ o.text }}
+              </span>
+              <i class="bi bi-chevron-right small opacity-50"></i>
+            </span>
+          </label>
+        {% endfor %}
+
+        <div class="d-flex gap-2 mt-3">
+          {% if order > 1 %}
+            <button class="btn btn-light" type="submit" name="nav" value="prev">Назад</button>
+          {% endif %}
+          {% if order < total %}
+            <button class="btn btn-primary ms-auto" type="submit" name="nav" value="next">Далее</button>
+          {% else %}
+            <button class="btn btn-success ms-auto" type="submit" name="nav" value="finish">Завершить</button>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="text-center text-body-secondary small mt-4">
+    Тест: {{ test.title }}
+  </div>
+</div>
+
+{% if ends_at %}
+<script>
+  (function () {
+    const leftEl = document.getElementById('left');
+    const endsAt = new Date("{{ ends_at.isoformat() }}Z").getTime();
+    function tick() {
+      const now = Date.now();
+      let s = Math.max(0, Math.floor((endsAt - now) / 1000));
+      const m = Math.floor(s / 60); s = s % 60;
+      if (leftEl) leftEl.textContent = m + ':' + String(s).padStart(2, '0');
+      if (endsAt <= now) window.location.href = "{{ url_for('tests.finish', slug=test.slug, attempt_id=attempt.id) }}";
+    }
+    tick(); setInterval(tick, 1000);
+  })();
+</script>
+{% endif %}
+
+<script>
+  // Меняем иконку при выборе варианта
+  document.addEventListener('change', function(e) {
+    if (e.target && e.target.matches('input.btn-check[name="option_id"]')) {
+      document.querySelectorAll('label.form-check i.bi').forEach(i => {
+        if (i.classList.contains('bi-check-circle-fill'))
+          i.classList.replace('bi-check-circle-fill', 'bi-circle');
+      });
+      const icon = e.target.nextElementSibling.querySelector('i.bi');
+      if (icon) icon.classList.replace('bi-circle', 'bi-check-circle-fill');
+    }
+  });
+</script>
+
+{% endblock student_content %}

@@ -1,0 +1,137 @@
+{% extends "psych/layout.html" %}
+
+
+{% block psych_content %}
+
+{% if cdi and cdi.level in ['high','moderate'] %}
+  <div class="alert alert-{{ 'danger' if cdi.level=='high' else 'warning' }} d-flex align-items-start" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <div>
+      <div><b>CDI-скрининг:</b> {{ cdi.label }}{% if cdi.dt %} · {{ cdi.dt.strftime('%d.%m.%Y') }}{% endif %}</div>
+      <div class="small">{{ cdi.reason }}. Рекомендуется очное обсуждение с учеником и, при необходимости, направление к специалисту.</div>
+    </div>
+  </div>
+{% endif %}
+
+<section class="py-3">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h1 class="h5 mb-0">{{ student.last_name }} {{ student.first_name }}</h1>
+    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('psych.dashboard') }}">К дашборду</a>
+  </div>
+
+  <div class="row g-3">
+    <!-- Левая колонка: график -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="mb-2">Средний % по тестам</h6>
+          <canvas id="perfBar"></canvas>
+
+          <div id="no-data-msg" class="text-body-secondary small mt-2" hidden>
+            Пока нет данных по баллам.
+          </div>
+
+          {# Передаём «чистый» JSON через data-атрибут (IDE не будет валидировать JSON внутри) #}
+          {% set perf_json = perf_chart_json if perf_chart_json is defined else '{"labels":[],"values":[]}' %}
+          <div id="perf-data" data-json='{{ perf_json | e }}'></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Правая колонка: последние попытки -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="mb-2">Последние попытки</h6>
+          <div class="table-responsive">
+            <table class="table table-sm align-middle">
+              <thead class="small text-body-secondary">
+                <tr><th>Тест</th><th>Статус</th><th>Дата</th></tr>
+              </thead>
+              <tbody>
+                {% for a, t, u in attempts %}
+                  <tr>
+                    <td>{{ t.title }}</td>
+                    <td>
+                      {% if a.finished_at %}
+                        <span class="badge text-bg-success">Завершено</span>
+                      {% else %}
+                        <span class="badge text-bg-secondary">В процессе</span>
+                      {% endif %}
+                    </td>
+                    <td class="text-nowrap">
+                      {% if a.finished_at %}
+                        {{ a.finished_at.strftime('%d.%m.%Y %H:%M') }}
+                      {% elif a.started_at %}
+                        {{ a.started_at.strftime('%d.%m.%Y %H:%M') }}
+                      {% elif a.created_at %}
+                        {{ a.created_at.strftime('%d.%m.%Y %H:%M') }}
+                      {% else %}
+                        —
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% else %}
+                  <tr><td colspan="3" class="text-body-secondary">Нет данных</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="small text-body-secondary">
+            Для детального отчёта откройте попытку из списка «Попытки» (если есть соответствующий экран).
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+  (function () {
+    const el   = document.getElementById('perfBar');
+    const node = document.getElementById('perf-data');
+    const msg  = document.getElementById('no-data-msg');
+    if (!el || !node) return;
+
+    let payload = { labels: [], values: [] };
+    try { payload = JSON.parse(node.dataset.json || "{}"); } catch (e) {}
+
+    const labels = Array.isArray(payload.labels) ? payload.labels : [];
+    const values = (payload.values || []).map(v => Number(v) || 0);
+
+    if (!labels.length || !values.length) {
+      if (msg) msg.hidden = false;
+      return;
+    } else if (msg) {
+      msg.hidden = true;
+    }
+
+    new Chart(el, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Средний %',
+          data: values,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: {
+            beginAtZero: true,
+            min: 0,
+            max: 100,
+            ticks: { precision: 0, callback: v => v + '%' }
+          }
+        }
+      }
+    });
+  })();
+</script>
+
+{% endblock %}

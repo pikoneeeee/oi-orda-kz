@@ -1,0 +1,86 @@
+{% extends "student/layout.html" %}
+
+{% block student_content %}
+<section class="py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">Результат: {{ test.title }}</h1>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('student.tests') }}">К другим тестам</a>
+      <a class="btn btn-primary btn-sm" href="{{ url_for('student.my_results') }}">Мои результаты</a>
+    </div>
+  </div>
+
+  <div class="text-body-secondary small mb-3">
+    {% if attempt.finished_at %}Завершено: {{ attempt.finished_at.strftime("%d.%m.%Y %H:%M") }}{% endif %}
+  </div>
+
+  <!-- Итоговая интерпретация -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="mb-2">{{ (summary.title if summary is defined and summary) or 'Итоги' }}</h5>
+      {% if summary is defined and summary and summary.bullets %}
+        <ul class="mb-0">
+          {% for line in summary.bullets %}
+            <li>{{ line|safe }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="text-body-secondary">Сводка недоступна.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Шкалы (если есть и не секретно) -->
+  {% set scales = per_scale|default({}, true) %}
+  {% if scales and not hide_details %}
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body">
+        <h6 class="mb-2">Шкалы</h6>
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+          {% for k, v in scales.items() %}
+            <div class="col">
+              <div class="p-3 bg-body-tertiary rounded-3 text-center">
+                <div class="fw-semibold">{{ k }}</div>
+                <div class="text-body-secondary">{{ v }}</div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Разбор по вопросам (если не секретный тест) -->
+  {% if not hide_details %}
+    {% if rows and rows|length %}
+      <div class="vstack gap-3">
+        {% for row in rows %}
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <div class="mb-2"><b>Вопрос {{ loop.index }}:</b> {{ row.q.text }}</div>
+              <div class="small">
+                Ваш ответ:
+                {% if row.chosen %}
+                  <span class="badge text-bg-primary">{{ row.chosen.text }}</span>
+                {% else %}
+                  <span class="text-body-secondary">не отвечено</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-body-secondary">Подробные ответы отсутствуют.</div>
+    {% endif %}
+  {% else %}
+    <div class="alert alert-info">
+      Подробности этого теста доступны школьному психологу. Здесь показана только сводка.
+    </div>
+  {% endif %}
+
+  <div class="text-center mt-4">
+    <a class="btn btn-success btn-lg" href="{{ url_for('student.tests') }}">Пройти ещё один тест</a>
+  </div>
+</section>
+{% endblock student_content %}

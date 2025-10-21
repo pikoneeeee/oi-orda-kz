@@ -1,0 +1,80 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top">
+  <div class="container">
+    {# Бренд ведёт на дашборд, если он есть, иначе — на список попыток, иначе — # #}
+    <a class="navbar-brand fw-bold"
+       href="{{ safe_url_for('psych.dashboard') or safe_url_for('psych.results') or '#' }}">
+      {{ site_name }}
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#psychnav"
+            aria-controls="psychnav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="psychnav" class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {# Дашборд #}
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint and request.endpoint.startswith('psych.dashboard') %}active{% endif %}"
+             href="{{ safe_url_for('psych.dashboard') or '#' }}">
+            Дашборд
+          </a>
+        </li>
+
+        {# Попытки #}
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'psych.results' or request.path.startswith('/psych/results') %}active{% endif %}"
+             href="{{ safe_url_for('psych.results') or '#' }}">
+            Попытки
+          </a>
+        </li>
+
+        {# Выпадающий список классов (если передали nav_classes) #}
+        {% if nav_classes is defined and nav_classes %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle {% if request.endpoint == 'psych.class_dashboard' or request.path.startswith('/psych/class/') %}active{% endif %}"
+             href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Классы
+          </a>
+          <ul class="dropdown-menu">
+            {% for c in nav_classes[:12] %}
+              <li><a class="dropdown-item" href="{{ url_for('psych.class_dashboard', class_id=c.id) }}">{{ c.name }}</a></li>
+            {% endfor %}
+            {% if nav_classes|length > 12 %}
+              <li><hr class="dropdown-divider"></li>
+              <li class="px-3 text-body-secondary small">Показано 12 из {{ nav_classes|length }}</li>
+            {% endif %}
+          </ul>
+        </li>
+        {% endif %}
+      </ul>
+
+      <div class="ms-auto d-flex align-items-center gap-2">
+        {# Переключатель языка — только если есть константа LANG_CHOICES #}
+        {% if LANG_CHOICES is defined %}
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+            {{ (get_locale().language if get_locale else 'ru')|upper }}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            {% for code, label in LANG_CHOICES %}
+              <li>
+                <a class="dropdown-item
+                          {% if (get_locale and get_locale().language == code) or (get_locale == code) %}active{% endif %}"
+                   href="{{ url_for('set_lang', lang=code) }}">
+                  {{ label }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <span class="text-body-secondary small d-none d-md-inline">{{ current_user.email }}</span>
+        <form action="{{ url_for('auth.logout') }}" method="post" class="m-0">
+          <button class="btn btn-outline-danger btn-sm" type="submit">Выйти</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</nav>

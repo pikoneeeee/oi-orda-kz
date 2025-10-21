@@ -1,0 +1,31 @@
+{% extends "student/layout.html" %}
+
+{% block title %}Мои результаты{% endblock %}
+{% block student_content %}
+
+<div class="container py-4">
+  <h4 class="fw-bold mb-3">Мои результаты</h4>
+
+  <div class="list-group rounded-4 shadow-sm">
+    {% for a in attempts %}
+      {% set status = 'Завершён' if a.finished_at else 'В процессе' %}
+      <a
+        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+        href="{{ url_for('tests.finish', slug=a.test.slug, attempt_id=a.id) }}"
+      >
+        <div>
+          <div class="fw-semibold">{{ a.test.title }}</div>
+          <div class="small text-body-secondary">
+            Начато: {{ a.started_at.strftime('%d.%m.%Y %H:%M') if a.started_at else '—' }}
+            • Статус: {{ status }}
+          </div>
+        </div>
+        <i class="bi bi-chevron-right"></i>
+      </a>
+    {% else %}
+      <div class="list-group-item">Пока нет завершённых попыток.</div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

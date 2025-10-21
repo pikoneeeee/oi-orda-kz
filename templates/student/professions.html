@@ -1,0 +1,54 @@
+{% extends "student/layout.html" %}
+{% block student_content %}
+
+<section class="py-4">
+  <div class="container">
+    <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+      <h1 class="h4 mb-0">Профессии</h1>
+
+      <form class="d-flex gap-2 ms-auto" method="get">
+        <select name="cluster" class="form-select form-select-sm" style="max-width:220px">
+          <option value="">Все направления</option>
+          {% for c in clusters %}
+            <option value="{{ c }}" {% if c==selected_cluster %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+        <input name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Поиск по названию/описанию">
+        <button class="btn btn-primary btn-sm">Найти</button>
+      </form>
+    </div>
+
+    {% if items %}
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-3">
+        {% for p in items %}
+          <div class="col">
+            <a class="card h-100 text-decoration-none border-0 shadow-sm"
+               href="{{ url_for('student.profession_detail', slug=p.slug) }}">
+              <img
+                src="{{ url_for('static', filename=p.image) if p.image else url_for('static', filename='img/professions/_placeholder.jpg') }}"
+                onerror="this.onerror=null;this.src='{{ url_for('static', filename='img/professions/_placeholder.jpg') }}';"
+                class="card-img-top" alt="{{ p.title }}"
+                style="object-fit:cover;height:160px"
+              >
+              <div class="card-body">
+                <h5 class="card-title mb-1">{{ p.title }}</h5>
+                <div class="small text-body-secondary mb-2">
+                  {{ p.clusters|join(" • ") }}
+                </div>
+                <p class="card-text text-body">
+                  {{ p.short }}
+                </p>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="alert alert-light border">
+        Ничего не найдено. Попробуйте изменить фильтры.
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

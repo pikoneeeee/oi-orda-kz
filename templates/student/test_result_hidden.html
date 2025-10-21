@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block header %}{% include "student/_header.html" %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="alert alert-warning rounded-4 shadow-sm">
+    <div class="fw-semibold mb-1">Результаты будут доступны школьному психологу</div>
+    <div class="text-body-secondary">
+      Вы прошли тест «{{ a.test.title }}». Психолог увидит ваши ответы и свяжется с вами для обратной связи.
+    </div>
+  </div>
+</div>
+{% endblock %}

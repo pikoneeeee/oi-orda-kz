@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="py-4 py-lg-5">
+  <div class="container">
+    <div class="row g-4 align-items-center">
+      <!-- Иллюстрация / преимущества -->
+      <div class="col-lg-6">
+        <div class="auth-hero p-4 p-lg-5 rounded-4 bg-gradient">
+          <h2 class="fw-bold mb-2">С возвращением!</h2>
+          <p class="text-body-secondary mb-4">Войдите, чтобы продолжить работу с тестами, аналитикой и рекомендациями.</p>
+          <ul class="list-unstyled small mb-0">
+            <li class="d-flex align-items-start gap-2 mb-2">
+              <i class="bi bi-check2-circle text-primary mt-1"></i>
+              <span>Единый вход для ученика, психолога и администратора школы</span>
+            </li>
+            <li class="d-flex align-items-start gap-2 mb-2">
+              <i class="bi bi-check2-circle text-primary mt-1"></i>
+              <span>Конфиденциальность и безопасное хранение данных</span>
+            </li>
+            <li class="d-flex align-items-start gap-2">
+              <i class="bi bi-check2-circle text-primary mt-1"></i>
+              <span>Доступ к опросникам и отчётам в пару кликов</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Форма -->
+      <div class="col-lg-6">
+        <div class="card auth-card border-0 shadow-sm rounded-4">
+          <div class="card-body p-4 p-lg-5">
+            <div class="mb-3">
+              <div class="h4 fw-bold mb-1">Вход</div>
+              <div class="text-body-secondary small">Нет аккаунта? <a href="{{ url_for('auth.register_school') }}">Оформить школу</a></div>
+            </div>
+
+            <form method="post" action="{{ url_for('auth.login_post') }}" novalidate>
+              <input type="hidden" name="next" value="{{ next_url or '' }}">
+
+              <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+                <label for="email">Email</label>
+              </div>
+
+              <div class="mb-3 input-group input-group-lg input-group-password">
+                <div class="form-floating flex-grow-1">
+                  <input type="password" class="form-control" id="password" name="password" placeholder="Пароль" required>
+                  <label for="password">Пароль</label>
+                </div>
+                <button class="btn btn-outline-secondary toggle-pass" type="button" aria-label="Показать пароль">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="1" id="remember" name="remember">
+                  <label class="form-check-label" for="remember">Запомнить меня</label>
+                </div>
+                <a class="small" href="{{ url_for('auth.forgot') }}">Забыли пароль?</a>
+              </div>
+
+              <button class="btn btn-primary btn-lg w-100">Войти</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="text-center mt-3 small text-body-secondary">
+          Нужна помощь? Напишите нам: <a href="mailto:hello@oi-orda.kz">hello@oi-orda.kz</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Показать/скрыть пароль
+  (function(){
+    const btn = document.querySelector('.toggle-pass');
+    if (!btn) return;
+    const input = document.getElementById('password');
+    btn.addEventListener('click', () => {
+      const isPass = input.type === 'password';
+      input.type = isPass ? 'text' : 'password';
+      btn.querySelector('i').className = isPass ? 'bi bi-eye-slash' : 'bi bi-eye';
+      btn.setAttribute('aria-label', isPass ? 'Скрыть пароль' : 'Показать пароль');
+    });
+  })();
+</script>
+
+{% endblock %}

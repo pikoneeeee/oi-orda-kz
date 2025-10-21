@@ -1,0 +1,168 @@
+{% extends "psych/layout.html" %}
+{% block psych_content %}
+
+<section class="py-3">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h1 class="h5 mb-0">Класс: {{ classroom.name }}</h1>
+    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('psych.dashboard') }}">К дашборду</a>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="mb-2">Активность по тестам</h6>
+          <div class="table-responsive">
+            <table class="table table-sm align-middle">
+              <thead class="small text-body-secondary">
+                <tr><th>Тест</th><th>Попыток</th><th>Средний %</th></tr>
+              </thead>
+              <tbody>
+              {% for t in tests_agg %}
+                <tr>
+                  <td>{{ t.title }}</td>
+                  <td>{{ t.cnt }}</td>
+                  <td>{{ (t.avg or 0)|round(1) if t.avg is not none else '—' }}</td>
+                </tr>
+              {% else %}
+                <tr><td colspan="3" class="text-body-secondary">Нет данных</td></tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm h-100">
+  <div class="card-body">
+    <h6 class="mb-2">MBTI: распределение букв</h6>
+
+    {# фиксируем высоту области графика #}
+    <div id="mbti-box" style="height: 320px;">
+      <canvas id="mbtiBar"></canvas>
+    </div>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+<div class="card border-0 shadow-sm mt-3">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h6 class="mb-0">Ученики и CDI-скрининг</h6>
+      <div class="small text-body-secondary">
+        Высокий: <b class="text-danger">{{ cdi_counts.high }}</b> ·
+        Умеренный: <b class="text-warning">{{ cdi_counts.moderate }}</b> ·
+        Низкий: <b>{{ cdi_counts.low }}</b> ·
+        Нет данных: <b class="text-body-secondary">{{ cdi_counts.none }}</b>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead class="small text-body-secondary">
+          <tr>
+            <th>Ученик</th>
+            <th style="width: 40%;">CDI скрининг</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for s in students %}
+          {% set r = cdi_risks.get(s.id) %}
+          <tr>
+            <td>
+              <a href="{{ url_for('psych.student_dashboard', user_id=s.id) }}">{{ s|display_name }}</a>
+            </td>
+            <td>
+              {% if r %}
+                <span class="badge text-bg-{{ r.color }}">{{ r.label }}</span>
+                {% if r.reason %}
+                  <span class="small text-body-secondary ms-2">{{ r.reason }}</span>
+                {% endif %}
+                {% if r.dt %}
+                  <span class="small text-body-secondary ms-2">{{ r.dt.strftime('%d.%m.%Y') }}</span>
+                {% endif %}
+                {% if r.level == 'high' %}
+                  <span class="small ms-2 text-danger"><i class="bi bi-exclamation-triangle-fill"></i> обратить внимание</span>
+                {% endif %}
+              {% else %}
+                <span class="text-body-secondary">—</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="2" class="text-body-secondary">Нет учеников</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+  <div class="card border-0 shadow-sm mt-3">
+    <div class="card-body">
+      <h6 class="mb-2">Последние попытки класса</h6>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead class="small text-body-secondary">
+          <tr><th>Ученик</th><th>Тест</th><th>Дата</th></tr>
+          </thead>
+          <tbody>
+          {% for a, t, u in recent_attempts %}
+            <tr>
+              <td><a href="{{ url_for('psych.result_view', attempt_id=a.id) }}">{{ t.title }}</a></td>
+              <td>{{ t.title }}</td>
+              <td>{{ (a.finished_at or a.id)|string }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="3" class="text-body-secondary">Нет данных</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# --- Данные для графика через data-атрибут (берём JSON, который пришёл из вьюхи: mbti_chart_json) --- #}
+<div id="mbti-data" data-json="{{ mbti_chart_json|e }}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+  (function () {
+    const holder = document.getElementById('mbti-data');
+    const el = document.getElementById('mbtiBar');
+    if (!holder || !el) return;
+
+    let payload = { labels: [], values: [] };
+    try {
+      const txt = holder.dataset.json || "";
+      if (txt.trim()) payload = JSON.parse(txt);
+    } catch (e) { /* ignore */ }
+
+    const labels = Array.isArray(payload.labels) ? payload.labels : [];
+    const values = (payload.values || []).map(v => Number(v) || 0);
+
+    if (!labels.length || !values.length) return;
+
+    new Chart(el, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{ label: 'Ответов', data: values, borderWidth: 1 }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+      }
+    });
+  })();
+</script>
+
+{% endblock %}

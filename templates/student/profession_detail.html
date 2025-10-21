@@ -1,0 +1,65 @@
+{% extends "student/layout.html" %}
+{% block student_content %}
+
+<section class="py-4">
+  <div class="container">
+    <a class="text-decoration-none small text-body-secondary" href="{{ url_for('student.professions') }}">&larr; к списку профессий</a>
+
+    <div class="row g-4 mt-1">
+      <div class="col-lg-7">
+        <h1 class="h4 mb-2">{{ p.title }}</h1>
+        <div class="mb-3">
+          {% for c in p.clusters %}
+            <span class="badge text-bg-light border me-1">{{ c }}</span>
+          {% endfor %}
+        </div>
+
+        <p class="lead">{{ p.short }}</p>
+        <p>{{ p.about }}</p>
+
+        {% if p.skills %}
+          <h6 class="mt-4">Что пригодится</h6>
+          <ul class="mb-0">
+            {% for s in p.skills %}
+              <li>{{ s }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {% if p.study %}
+          <h6 class="mt-4">Где учиться</h6>
+          <ul class="mb-0">
+            {% for s in p.study %}
+              <li>{{ s }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {% if p.links %}
+          <h6 class="mt-4">Где узнать больше</h6>
+          <ul class="mb-0">
+            {% for l in p.links %}
+              <li><a href="{{ l.url }}" target="_blank" rel="noopener">{{ l.title }}</a></li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+
+      <div class="col-lg-5">
+        <div class="card border-0 shadow-sm">
+          <img
+            src="{{ url_for('static', filename=p.image) if p.image else url_for('static', filename='img/professions/_placeholder.jpg') }}"
+            onerror="this.onerror=null;this.src='{{ url_for('static', filename='img/professions/_placeholder.jpg') }}';"
+            class="card-img-top" alt="{{ p.title }}"
+            style="object-fit:cover;height:280px"
+          >
+          <div class="card-body small text-body-secondary">
+            Фото носит иллюстративный характер.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

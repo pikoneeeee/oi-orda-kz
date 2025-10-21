@@ -1,0 +1,58 @@
+{% extends "student/layout.html" %}
+{% block student_content %}
+
+  <!-- твой контент «Тесты» -->
+
+
+
+<section class="py-4">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="fw-bold mb-1">Тесты</h2>
+      <p class="text-body-secondary mb-0">Выбери тест, прочитай подробнее и проходи с таймером.</p>
+    </div>
+
+    {% if tests and tests|length %}
+      <div class="row g-4">
+        {% for t in tests %}
+          <div class="col-12 col-md-6 col-xl-4">
+            <a href="{{ url_for('student.test_detail', slug=t.slug) }}"
+               class="card card-hover text-decoration-none h-100 shadow-sm border-0">
+
+              <div class="ratio ratio-4x3 rounded-top bg-body-secondary overflow-hidden">
+                <img src="{{ url_for('static', filename=t.image or 'img/tests/placeholder.png') }}"
+                     class="w-100 h-100 object-fit-cover"
+                     alt="{{ t.title }}"
+                     onerror="this.style.display='none'; this.parentElement.classList.add('bg-body-tertiary')">
+              </div>
+
+              <div class="card-body">
+                <h5 class="card-title text-dark mb-2">{{ t.title }}</h5>
+                <p class="card-text text-body-secondary small mb-0">
+                  {{ t.short_desc }}
+                </p>
+              </div>
+
+              <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-3">
+                <div class="d-flex align-items-center justify-content-between text-body-secondary small">
+                  <span><i class="bi bi-clock me-1"></i>{{ t.duration_min }} мин</span>
+                  {% if t.confidential_student %}
+                    <span class="badge text-bg-warning-subtle border border-warning-subtle">
+                      Результаты видны психологу
+                    </span>
+                  {% endif %}
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center text-body-secondary py-5">
+        Пока нет тестов. Обновите страницу или запустите сидер данных.
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

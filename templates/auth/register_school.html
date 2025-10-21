@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h3 class="fw-bold mb-3">Регистрация школы</h3>
+<form method="post" action="{{ url_for('auth.register_school_post') }}" class="card p-3" style="max-width:520px">
+  <div class="mb-3"><label class="form-label">Название школы</label><input name="school_name" class="form-control" required></div>
+  <div class="mb-3"><label class="form-label">Город</label><input name="city" class="form-control" placeholder="Алматы"></div>
+  <hr>
+  <div class="mb-3"><label class="form-label">Email администратора</label><input name="email" type="email" class="form-control" required></div>
+  <div class="mb-3"><label class="form-label">Пароль</label><input name="password" type="password" class="form-control" required></div>
+  <button class="btn btn-primary">Создать школу</button>
+</form>
+{% endblock %}

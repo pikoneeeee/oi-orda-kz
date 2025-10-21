@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- HERO -->
+<section id="hero" class="py-5 py-lg-6 bg-white">
+  <div class="container">
+    <div class="row align-items-center g-4 g-lg-5">
+      <!-- Текст слева -->
+      <div class="col-lg-6 order-2 order-lg-1">
+        <span class="badge bg-primary-subtle text-primary mb-3">
+          <i class="bi bi-shield-check me-1"></i> Безопасно и конфиденциально
+        </span>
+        <h1 class="display-4 fw-bold mb-3">
+          Добро пожаловать в <span class="text-primary">Oi-Orda</span>
+        </h1>
+        <p class="lead text-body-secondary mb-4">
+          Система школьного тестирования для 7–11 классов: раннее выявление рисков,
+          рекомендации по поступлению в вузы Алматы и Астаны, и удобные кабинеты для учеников и школьных психологов.
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="{{ url_for('public.pricing') }}" class="btn btn-primary btn-lg">Подключить школу</a>
+          <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg">Войти</a>
+        </div>
+        <div class="small text-body-secondary mt-3">
+          От выявления до помощи — не больше 24 часов.
+        </div>
+      </div>
+
+      <!-- Картинка справа -->
+      <div class="col-lg-6 text-center order-1 order-lg-2">
+        <div class="hero-visual mx-auto">
+          <img
+            src="{{ url_for('static', filename='img/hero-placeholder.png') }}"
+            class="img-fluid hero-phone"
+            alt="Интерфейс Oi-Orda"
+            width="520" height="520" loading="eager">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- О НАС (сразу после хиро) -->
+<section id="about" class="py-5 bg-body-tertiary border-top">
+  <div class="container">
+
+    <!-- Заголовок и подзаголовок -->
+    <div class="text-center mb-4">
+      <h2 class="fw-bold mb-2">О нас</h2>
+      <p class="lead text-body-secondary mb-0">
+        Oi-Orda — школьная система раннего выявления рисков и профориентации для 7–11 классов.
+        Мы объединяем научно-обоснованные опросники и технологии, чтобы помочь каждому ученику.
+      </p>
+    </div>
+
+    <!-- Два смысловых блока -->
+    <div class="row g-4 mt-1">
+      <div class="col-lg-6">
+        <div class="card h-100 shadow-sm border-0 rounded-4">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <div class="feature-icon"><i class="bi bi-bullseye"></i></div>
+              <h5 class="mb-0 fw-semibold">Наша миссия</h5>
+            </div>
+            <p class="text-body-secondary mb-0">
+              Создать безопасную среду, где ученики вовремя получают психологическую поддержку
+              и рекомендации по учебной траектории — от выбора профиля до поступления в вуз.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card h-100 shadow-sm border-0 rounded-4">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <div class="feature-icon"><i class="bi bi-lightbulb"></i></div>
+              <h5 class="mb-0 fw-semibold">Что такое Oi-Orda</h5>
+            </div>
+            <p class="text-body-secondary mb-0">
+              Платформа для школ: валидированные опросники (CDI, PHQ-9, GAD-7, EPI),
+              автоматический подсчёт, уровни риска, алерты для психолога и рекомендации по вузам
+              Алматы и Астаны для старшеклассников.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ключевые цифры -->
+    <div class="row row-cols-2 row-cols-md-4 g-3 mt-4">
+      <div class="col">
+        <div class="stat-card">
+          <div class="stat-number">7–11</div>
+          <div class="stat-label">классы</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="stat-card">
+          <div class="stat-number">4</div>
+          <div class="stat-label">научные методики</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="stat-card">
+          <div class="stat-number">24ч</div>
+          <div class="stat-label">от выявления до помощи</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="stat-card">
+          <div class="stat-number"><i class="bi bi-geo-alt"></i></div>
+          <div class="stat-label">Алматы • Астана</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Акцентная плашка -->
+    <div class="about-pill mt-4">
+      <i class="bi bi-heart me-2"></i>
+      Индивидуальный путь каждого ученика — наш приоритет
+    </div>
+
+    <!-- Принципы (мини-список) -->
+    <div class="d-flex flex-wrap gap-3 mt-4 small text-body-secondary">
+      <span class="principle"><i class="bi bi-shield-lock me-1"></i> Конфиденциальность</span>
+      <span class="principle"><i class="bi bi-mortarboard me-1"></i> Поступление осознанно</span>
+      <span class="principle"><i class="bi bi-graph-up-arrow me-1"></i> Метрики и отчёты</span>
+      <span class="principle"><i class="bi bi-people me-1"></i> Поддержка школы и семьи</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ПРОДУКТ -->
+<section id="product" class="py-5">
+  <div class="container">
+    <!-- заголовок -->
+    <div class="text-center mb-4">
+      <h2 class="fw-bold mb-2">Продукт</h2>
+      <p class="lead text-body-secondary mb-0">Платформа с ИИ для школ и старшеклассников</p>
+    </div>
+
+    <!-- два больших скриншота -->
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-6">
+        <figure class="shot card border-0 shadow-sm rounded-4 overflow-hidden">
+          <img src="{{ url_for('static', filename='img/product-psych.png') }}" class="w-100"
+               alt="Кабинет психолога: опросники, уровни риска" loading="lazy">
+        </figure>
+        <p class="small text-center text-body-secondary mt-2">Кабинет психолога: опросники, уровни риска, классы</p>
+      </div>
+      <div class="col-lg-6">
+        <figure class="shot card border-0 shadow-sm rounded-4 overflow-hidden">
+          <img src="{{ url_for('static', filename='img/product-analytics.png') }}" class="w-100"
+               alt="Аналитика и отчёты" loading="lazy">
+        </figure>
+        <p class="small text-center text-body-secondary mt-2">Аналитика: отчёты по классам, динамика, сегменты</p>
+      </div>
+    </div>
+
+    <!-- сетка фич -->
+    <div class="row g-3 mt-4 row-cols-1 row-cols-md-2 row-cols-lg-3">
+      <div class="col">
+        <div class="feat h-100 p-4 rounded-4 shadow-sm">
+          <div class="feat-icon bg-primary-subtle text-primary"><i class="bi bi-graph-up"></i></div>
+          <h5 class="mt-3 mb-1">Аналитика</h5>
+          <p class="text-body-secondary mb-0">Панель мониторинга, отчёты по классам, динамика показателей.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="feat h-100 p-4 rounded-4 shadow-sm">
+          <div class="feat-icon bg-success-subtle text-success"><i class="bi bi-database"></i></div>
+          <h5 class="mt-3 mb-1">Онлайн-база данных</h5>
+          <p class="text-body-secondary mb-0">Материалы и протоколы: от диагностики до сопровождения.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="feat h-100 p-4 rounded-4 shadow-sm">
+          <div class="feat-icon bg-warning-subtle text-warning"><i class="bi bi-mortarboard"></i></div>
+          <h5 class="mt-3 mb-1">Поступление</h5>
+          <p class="text-body-secondary mb-0">Подбор вузов Алматы и Астаны, требования и рекомендации.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="feat h-100 p-4 rounded-4 shadow-sm">
+          <div class="feat-icon bg-indigo-100 text-indigo-600"><i class="bi bi-person-workspace"></i></div>
+          <h5 class="mt-3 mb-1">Карьерное консультирование</h5>
+          <p class="text-body-secondary mb-0">Индивидуальные траектории: интересы, сильные стороны, цели.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="feat h-100 p-4 rounded-4 shadow-sm">
+          <div class="feat-icon bg-info-subtle text-info"><i class="bi bi-book"></i></div>
+          <h5 class="mt-3 mb-1">Учебные материалы</h5>
+          <p class="text-body-secondary mb-0">Видеоуроки, статьи и методички для учеников и психологов.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="feat h-100 p-4 rounded-4 shadow-sm">
+          <div class="feat-icon bg-success-subtle text-success"><i class="bi bi-clipboard-check"></i></div>
+          <h5 class="mt-3 mb-1">Тестирование</h5>
+          <p class="text-body-secondary mb-0">CDI, PHQ-9, GAD-7, EPI — автоматический подсчёт и уровни риска.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA-плашка -->
+    <div class="card border-0 rounded-4 bg-gradient mt-4 p-4 p-lg-5">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div class="h5 mb-0">Готово к запуску в вашей школе</div>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('public.pricing') }}">Подключить школу</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ПРЕИМУЩЕСТВА -->
+<section id="benefits" class="py-5 bg-body-tertiary border-top">
+  <div class="container">
+
+    <div class="text-center mb-4">
+      <h2 class="fw-bold mb-2">Функции и преимущества</h2>
+      <p class="lead text-body-secondary mb-0">Что получает школа и каждый ученик</p>
+    </div>
+
+    <!-- Для школы -->
+    <div class="mb-3">
+      <h4 class="fw-bold mb-2"><i class="bi bi-building me-2"></i>Для школы</h4>
+      <p class="text-body-secondary mb-3">Аналитика по классам, программа сопровождения, ИИ-ассистент, гибкая адаптация под потребности школы.</p>
+    </div>
+
+    <div class="row g-3 row-cols-1 row-cols-md-2 row-cols-lg-3">
+      <div class="col">
+        <div class="benef-card h-100 p-4 rounded-4 shadow-sm">
+          <div class="benef-icon bg-primary-subtle text-primary"><i class="bi bi-graph-up"></i></div>
+          <h5 class="mt-3 mb-1">Аналитика учащихся</h5>
+          <p class="text-body-secondary mb-0">Дашборды, отчёты по классам, сравнение параллелей, динамика.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="benef-card h-100 p-4 rounded-4 shadow-sm">
+          <div class="benef-icon bg-success-subtle text-success"><i class="bi bi-send"></i></div>
+          <h5 class="mt-3 mb-1">Карьерное ориентирование</h5>
+          <p class="text-body-secondary mb-0">Программа встреч и консультаций, календарь задач и напоминания.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="benef-card h-100 p-4 rounded-4 shadow-sm">
+          <div class="benef-icon bg-info-subtle text-info"><i class="bi bi-robot"></i></div>
+          <h5 class="mt-3 mb-1">ИИ-ассистент</h5>
+          <p class="text-body-secondary mb-0">Подсказки психологу, авто-инсайты и предложения по сопровождению.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Для ученика -->
+    <div class="mt-5 mb-3">
+      <h4 class="fw-bold mb-2"><i class="bi bi-person me-2"></i>Для ученика</h4>
+      <p class="text-body-secondary mb-3">Инструменты самоопределения, подготовка к поступлению и индивидуальная траектория.</p>
+    </div>
+
+    <div class="row g-3 row-cols-1 row-cols-md-2 row-cols-lg-3">
+      <div class="col">
+        <div class="benef-card h-100 p-4 rounded-4 shadow-sm">
+          <div class="benef-icon bg-indigo-100 text-indigo-600"><i class="bi bi-compass"></i></div>
+          <h5 class="mt-3 mb-1">Карьерный навигатор</h5>
+          <p class="text-body-secondary mb-0">Интересы, сильные стороны и подходящие направления.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="benef-card h-100 p-4 rounded-4 shadow-sm">
+          <div class="benef-icon bg-warning-subtle text-warning"><i class="bi bi-journal-bookmark"></i></div>
+          <h5 class="mt-3 mb-1">Персональные рекомендации</h5>
+          <p class="text-body-secondary mb-0">Профили вузов Алматы и Астаны, требования, чек-листы.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="benef-card h-100 p-4 rounded-4 shadow-sm">
+          <div class="benef-icon bg-success-subtle text-success"><i class="bi bi-clipboard-check"></i></div>
+          <h5 class="mt-3 mb-1">Пошаговый план</h5>
+          <p class="text-body-secondary mb-0">От тестов и портфолио до подачи документов — всё по этапам.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="card border-0 rounded-4 bg-white mt-4 p-4 p-lg-5 shadow-sm">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div class="h5 mb-0">Готовы попробовать в вашей школе?</div>
+        <a href="{{ url_for('public.pricing') }}" class="btn btn-primary btn-lg">Подключить школу</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- КОНТАКТЫ -->
+<section id="contacts" class="py-5 border-top">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="fw-bold mb-2">Контакты</h2>
+      <p class="lead text-body-secondary mb-0">Оставьте заявку — поможем подключить вашу школу</p>
+    </div>
+
+    <div class="row g-4">
+      <!-- Карточки с контактами -->
+      <div class="col-lg-5">
+        <div class="contact-card p-4 rounded-4 shadow-sm mb-3">
+          <div class="d-flex align-items-start gap-3">
+            <div class="contact-icon bg-primary-subtle text-primary"><i class="bi bi-envelope"></i></div>
+            <div>
+              <div class="fw-semibold">Email</div>
+              <a href="mailto:hello@oi-orda.kz">hello@oi-orda.kz</a>
+            </div>
+          </div>
+        </div>
+        <div class="contact-card p-4 rounded-4 shadow-sm mb-3">
+          <div class="d-flex align-items-start gap-3">
+            <div class="contact-icon bg-success-subtle text-success"><i class="bi bi-telephone"></i></div>
+            <div>
+              <div class="fw-semibold">Телефон</div>
+              <a href="tel:+77001234567">+7 700 123 45 67</a>
+            </div>
+          </div>
+        </div>
+        <div class="contact-card p-4 rounded-4 shadow-sm">
+          <div class="d-flex align-items-start gap-3">
+            <div class="contact-icon bg-info-subtle text-info"><i class="bi bi-geo-alt"></i></div>
+            <div>
+              <div class="fw-semibold">Адрес</div>
+              <div class="text-body-secondary">Казахстан, Алматы / Астана</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Форма -->
+      <div class="col-lg-7">
+        <form class="card border-0 shadow-sm rounded-4 p-4" method="post" action="{{ url_for('public.contact') }}">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Имя*</label>
+              <input name="name" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email*</label>
+              <input name="email" type="email" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Телефон</label>
+              <input name="phone" class="form-control" placeholder="+7 ...">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Школа</label>
+              <input name="school" class="form-control" placeholder="Название школы">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Сообщение*</label>
+              <textarea name="message" class="form-control" rows="4" required></textarea>
+            </div>
+            <div class="col-12 d-flex align-items-center justify-content-between">
+              <small class="text-body-secondary">Нажимая «Отправить», вы соглашаетесь с обработкой персональных данных.</small>
+              <button class="btn btn-primary">Отправить</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- (Опционально) ниже можно добавить секции #product, #benefits, #contacts -->
+{% endblock %}

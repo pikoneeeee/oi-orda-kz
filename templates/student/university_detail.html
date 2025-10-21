@@ -1,0 +1,81 @@
+{% extends "student/layout.html" %}
+{% block student_content %}
+
+<section class="py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <div class="small text-body-secondary">{{ u.city }}</div>
+      <h1 class="h4 mb-1">{{ u.name }}</h1>
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('student.universities') }}">Назад к списку</a>
+      <a class="btn btn-primary btn-sm" target="_blank" rel="noopener" href="{{ u.site_url }}">Официальный сайт</a>
+    </div>
+  </div>
+
+  <!-- Платное обучение -->
+  <div class="card border-0 shadow-sm rounded-4 mb-3">
+    <div class="card-body">
+      <h5 class="mb-2">Платное обучение</h5>
+      <p class="mb-2">{{ u.tuition_note or 'Стоимость обучения публикуется ежегодно.' }}</p>
+      {% if u.tuition_urls %}
+        <ul class="mb-0">
+          {% for link in u.tuition_urls %}
+            <li><a href="{{ link }}" target="_blank" rel="noopener">Смотреть стоимость на сайте</a></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Гранты/ЕНТ -->
+  <div class="card border-0 shadow-sm rounded-4 mb-3">
+    <div class="card-body">
+      <h5 class="mb-2">Гранты и проходные баллы</h5>
+      <p class="mb-2">
+        {{ u.grants_note or 'Проходные баллы зависят от группы образовательных программ и конкурса текущего года.' }}
+      </p>
+      {% if u.grants_urls %}
+        <ul class="mb-0">
+          {% for link in u.grants_urls %}
+            <li><a href="{{ link }}" target="_blank" rel="noopener">Официальная информация</a></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Направления -->
+  {% if u.program_groups %}
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+      <div class="card-body">
+        <h5 class="mb-2">Направления подготовки (общее)</h5>
+        <div class="row row-cols-2 row-cols-md-3 g-2">
+          {% for g in u.program_groups %}
+            <div class="col">
+              <div class="p-3 bg-body-tertiary rounded-3 text-center small">{{ g }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Доп. ссылки -->
+  {% set links = (u.more_links or []) + ([u.admission_url] if u.admission_url else []) %}
+  {% if links %}
+    <div class="card border-0 shadow-sm rounded-4">
+      <div class="card-body">
+        <h5 class="mb-2">Полезные ссылки</h5>
+        <ul class="mb-0">
+          {% for link in links %}
+            <li><a href="{{ link }}" target="_blank" rel="noopener">{{ link }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  {% endif %}
+</section>
+
+{% endblock %}
+

@@ -1,0 +1,114 @@
+{% extends "student/layout.html" %}
+{% block student_content %}
+
+<section class="py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h5 mb-0">AI-Orda</h1>
+    <form method="post" action="{{ url_for('student.ai_orda_new') }}" class="m-0">
+      <button class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-plus-lg"></i>
+        {% if lang=='kk' %}Жаңа диалог{% elif lang=='en' %}New chat{% else %}Новый диалог{% endif %}
+      </button>
+    </form>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-4 col-lg-3">
+      <div class="list-group small">
+        {% for th in threads %}
+          <a class="list-group-item list-group-item-action {% if th.id==thread.id %}active{% endif %}"
+             href="{{ url_for('student.ai_orda', thread_id=th.id) }}">
+            {{ th.title or ('Диалог #' ~ th.id) }}
+            <div class="small opacity-75">
+              {% if th.updated_at %}{{ th.updated_at.strftime('%d.%m %H:%M') }}{% endif %}
+            </div>
+          </a>
+        {% else %}
+          <div class="text-body-secondary px-3 py-2">
+            {% if lang=='kk' %}Әзірше диалог жоқ{% elif lang=='en' %}No chats yet{% else %}Пока нет диалогов{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="col-md-8 col-lg-9">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body" id="chat-box" style="max-height: 60vh; overflow:auto;">
+          {% for m in messages %}
+            <div class="d-flex mb-3 {% if m.role=='user' %}justify-content-end{% else %}justify-content-start{% endif %}">
+              <div class="p-3 rounded-3 {% if m.role=='user' %}bg-primary text-white{% else %}bg-body-tertiary{% endif %}" style="max-width: 80%;">
+                <div class="small opacity-75 mb-1">
+                  {% if m.role=='user' %}
+                    {% if lang=='kk' %}Сіз{% elif lang=='en' %}You{% else %}Вы{% endif %}
+                  {% else %}
+                    AI-Orda
+                  {% endif %}
+                </div>
+                <div>{{ m.content | safe }}</div>
+              </div>
+            </div>
+          {% else %}
+            <div class="text-body-secondary">
+              {% if lang=='kk' %}Сәлем! Сұрақ қойып көріңіз.{% elif lang=='en' %}Hi! Ask your question.{% else %}Привет! Задай свой вопрос.{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="card-footer bg-transparent">
+          <form method="post" action="{{ url_for('student.ai_orda_send') }}" class="vstack gap-2" id="chat-form">
+            <input type="hidden" name="thread_id" value="{{ thread.id }}">
+            <textarea class="form-control" name="q" id="chat-input" rows="3"
+              placeholder="{% if lang=='kk' %}Сұрағыңызды жазыңыз...{% elif lang=='en' %}Type your question...{% else %}Напишите вопрос...{% endif %}"
+              required autocomplete="off" autofocus></textarea>
+            <div class="d-flex">
+              <button class="btn btn-primary ms-auto" id="chat-send-btn">
+                {% if lang=='kk' %}Жіберу{% elif lang=='en' %}Send{% else %}Отправить{% endif %}
+              </button>
+            </div>
+            <div class="small text-body-secondary">
+              {% if lang=='kk' %}Enter — жіберу, Shift+Enter — жаңа жол{% elif lang=='en' %}Enter — send, Shift+Enter — new line{% else %}Enter — отправка, Shift+Enter — новая строка{% endif %}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // автоскролл к последнему сообщению
+  (function () {
+    const box = document.getElementById('chat-box');
+    if (box) box.scrollTop = box.scrollHeight;
+  })();
+</script>
+
+<script>
+  // Enter — отправка; Shift+Enter — новая строка; Ctrl/Cmd+Enter — тоже отправка
+  (function () {
+    const form = document.getElementById('chat-form');
+    const ta   = document.getElementById('chat-input');
+    const btn  = document.getElementById('chat-send-btn');
+
+    if (!form || !ta) return;
+
+    function submitIfHasText() {
+      if (ta.value.trim().length === 0) return;
+      btn?.setAttribute('disabled', 'disabled');
+      if (form.requestSubmit) form.requestSubmit(btn);
+      else form.submit();
+    }
+
+    ta.addEventListener('keydown', function (e) {
+      if (e.isComposing) return; // IME (рус/каз) набор
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault(); submitIfHasText(); return;
+      }
+      if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        e.preventDefault(); submitIfHasText(); return;
+      }
+    });
+  })();
+</script>
+
+{% endblock %}

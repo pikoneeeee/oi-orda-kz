@@ -1,0 +1,54 @@
+{% extends "student/layout.html" %}
+{% block student_content %}
+
+<section class="py-4">
+  <div class="d-flex flex-wrap gap-2 align-items-end mb-3">
+    <form class="row g-2" method="get">
+      <div class="col-auto">
+        <label class="form-label small mb-1">Поиск</label>
+        <input name="q" class="form-control" placeholder="Название, программа…" value="{{ q or '' }}">
+      </div>
+      <div class="col-auto">
+        <label class="form-label small mb-1">Город</label>
+        <select name="city" class="form-select">
+          <option value="">Все города</option>
+          {% for c in cities %}
+            <option value="{{ c }}" {% if city==c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-auto align-self-end">
+        <button class="btn btn-primary">Показать</button>
+        <a class="btn btn-outline-secondary" href="{{ url_for('student.universities') }}">Сброс</a>
+      </div>
+    </form>
+  </div>
+
+  {% if items %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+      {% for u in items %}
+        <div class="col">
+          <div class="card border-0 shadow-sm h-100 rounded-4">
+            <div class="card-body d-flex flex-column">
+              <div class="small text-body-secondary">{{ u.city }}</div>
+              <h5 class="mt-1 mb-2">{{ u.name }}</h5>
+              {% if u.program_groups %}
+                <div class="mb-2 small">
+                  Направления: {{ u.program_groups|join(', ') }}
+                </div>
+              {% endif %}
+              <div class="mt-auto d-flex gap-2">
+                <a class="btn btn-outline-primary btn-sm" href="{{ url_for('student.university_detail', slug=u.slug) }}">Подробнее</a>
+                <a class="btn btn-outline-secondary btn-sm" target="_blank" rel="noopener" href="{{ u.site_url }}">Сайт</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info">Не найдено. Измени запрос/фильтр.</div>
+  {% endif %}
+</section>
+
+{% endblock %}

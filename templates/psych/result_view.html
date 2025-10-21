@@ -1,0 +1,164 @@
+{% extends "psych/layout.html" %}
+{% block psych_content %}
+
+<section class="py-3">
+  <div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+      <h1 class="h5 mb-1">{{ test.title or 'Без названия' }}</h1>
+      <div class="text-body-secondary">
+        {# Красивое имя ученика с фолбэками #}
+        {% if user is defined %}
+          {% if user|display_name is defined %}
+            {{ user|display_name }}
+          {% else %}
+            {{ (user.last_name ~ ' ' ~ user.first_name) if (user.last_name or user.first_name) else (user.name or user.email or ('#' ~ user.id)) }}
+          {% endif %}
+        {% endif %}
+        ·
+        {% if attempt.finished_at %}
+          {{ attempt.finished_at.strftime('%d.%m.%Y %H:%M') }}
+        {% elif attempt.started_at %}
+          {{ attempt.started_at.strftime('%d.%m.%Y %H:%M') }}
+        {% elif attempt.created_at %}
+          {{ attempt.created_at.strftime('%d.%m.%Y %H:%M') }}
+        {% else %}—{% endif %}
+      </div>
+    </div>
+
+    {# Безопасный «Назад»: на список попыток или на дашборд #}
+    {% set _back = safe_url_for('psych.results') if endpoint_exists('psych.results') else safe_url_for('psych.dashboard') %}
+    <a class="btn btn-outline-secondary btn-sm" href="{{ _back }}">Назад</a>
+  </div>
+
+  <div class="row g-3">
+
+    <!-- Ключевые выводы -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0">{{ summary.title or 'Ключевые выводы' }}</h6>
+            {% if score_pct is not none %}
+              <span class="badge text-bg-info">~{{ score_pct|int }}%</span>
+            {% endif %}
+          </div>
+
+          {% if summary.code %}
+            <div class="mb-3">
+              <span class="badge text-bg-primary">Код: {{ summary.code }}</span>
+            </div>
+          {% endif %}
+
+          <ul class="mb-0">
+            {% for b in (summary.bullets or []) %}
+              <li class="mb-1">{{ b | safe }}</li>
+            {% else %}
+              <li class="text-body-secondary">Нет данных для интерпретации.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Сводные показатели -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="mb-2">Сводные показатели</h6>
+
+          {% if max_score %}
+            <div class="mb-3">
+              <div class="small text-body-secondary mb-1">Суммарный балл ({{ raw }}/{{ max_score }})</div>
+              <div class="progress" role="progressbar" aria-label="score">
+                <div class="progress-bar" data-pct="{{ score_pct|int }}"></div>
+              </div>
+            </div>
+          {% endif %}
+
+          {% if per %}
+            <div class="small text-body-secondary mb-2">Шкалы</div>
+            <div class="vstack gap-2">
+              {# сортируем по ключу шкалы #}
+              {% for k, v in per.items() | sort %}
+                {% set scaled = v * 4 %}
+                {% set pct = (100 if scaled > 100 else scaled)|int %}
+                <div class="d-flex align-items-center gap-2">
+                  <div class="text-nowrap" style="width: 88px;"><code>{{ k }}</code></div>
+                  <div class="flex-grow-1">
+                    <div class="progress" role="progressbar" aria-label="{{ k }}">
+                      <div class="progress-bar" data-pct="{{ pct }}" data-label="{{ v }}"></div>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-body-secondary">Пока нет посчитанных шкал.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Детализация ответов -->
+  <div class="card border-0 shadow-sm mt-3">
+    <div class="card-body">
+      <h6 class="mb-2">Детализация ответов</h6>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead class="small text-body-secondary">
+            <tr>
+              <th style="width: 48px;">#</th>
+              <th>Вопрос</th>
+              <th>Выбор</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+              <tr>
+                <td class="text-body-secondary">{{ loop.index }}</td>
+                <td>{{ row.q.text }}</td>
+                <td>
+                  {% if row.opts %}
+                    <div class="d-flex flex-wrap gap-1">
+                      {% for o in row.opts %}
+                        {% set picked = (row.chosen and o.id == row.chosen.id) %}
+                        <span class="badge {% if picked %}text-bg-primary{% else %}text-bg-light text-dark border{% endif %}">
+                          {{ o.text }}
+                        </span>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    <span class="text-body-secondary">—</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% else %}
+              <tr><td colspan="3" class="text-body-secondary">Нет ответов</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- Микро-скрипт заполняет ширину/текст прогресс-баров -->
+<script>
+(function () {
+  document.querySelectorAll('.progress-bar[data-pct]').forEach(function (el) {
+    var pct = Number(el.getAttribute('data-pct')) || 0;
+    if (pct < 0) pct = 0; if (pct > 100) pct = 100;
+    el.style.width = pct + '%';
+    // подпись: либо значение шкалы, либо сам процент
+    var label = el.getAttribute('data-label');
+    el.textContent = (label !== null && label !== undefined && label !== '')
+      ? label
+      : (pct + '%');
+  });
+})();
+</script>
+
+{% endblock %}

@@ -1,0 +1,104 @@
+{# templates/student/test_result_mbti.html #}
+{% extends "student/layout.html" %}
+{% block title %}MBTI результат — {{ type_code }}{% endblock %}
+{% block student_content %}
+
+<div class="container py-4">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h4 class="fw-bold mb-0">MBTI: {{ type_code }}</h4>
+    <div class="small text-body-secondary">
+      Начато: {{ attempt.started_at.strftime('%d.%m.%Y %H:%M') if attempt.started_at else '—' }}
+      {% if attempt.finished_at %} • Завершено: {{ attempt.finished_at.strftime('%d.%m.%Y %H:%M') }}{% endif %}
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+          <h6 class="text-uppercase text-body-secondary mb-3">Профиль по шкалам</h6>
+
+          {# EI #}
+          {% set e = pct.get('E', 0) %}{% set i = pct.get('I', 0) %}
+          <div class="d-flex justify-content-between small">
+            <span>Экстраверсия (E)</span><span>{{ e }}%</span>
+          </div>
+          <div class="progress mb-1" style="height:8px;">
+            <div class="progress-bar" role="progressbar" style="width: {{ e }}%;"></div>
+          </div>
+          <div class="d-flex justify-content-between small text-body-secondary mb-3">
+            <span>Интроверсия (I)</span><span>{{ i }}%</span>
+          </div>
+
+          {# SN #}
+          {% set s = pct.get('S', 0) %}{% set n = pct.get('N', 0) %}
+          <div class="d-flex justify-content-between small">
+            <span>Сенсорика (S)</span><span>{{ s }}%</span>
+          </div>
+          <div class="progress mb-1" style="height:8px;">
+            <div class="progress-bar" role="progressbar" style="width: {{ s }}%;"></div>
+          </div>
+          <div class="d-flex justify-content-between small text-body-secondary mb-3">
+            <span>Интуиция (N)</span><span>{{ n }}%</span>
+          </div>
+
+          {# TF #}
+          {% set t = pct.get('T', 0) %}{% set f = pct.get('F', 0) %}
+          <div class="d-flex justify-content-between small">
+            <span>Мышление/Логика (T)</span><span>{{ t }}%</span>
+          </div>
+          <div class="progress mb-1" style="height:8px;">
+            <div class="progress-bar" role="progressbar" style="width: {{ t }}%;"></div>
+          </div>
+          <div class="d-flex justify-content-between small text-body-secondary mb-3">
+            <span>Чувство (F)</span><span>{{ f }}%</span>
+          </div>
+
+          {# JP #}
+          {% set j = pct.get('J', 0) %}{% set p = pct.get('P', 0) %}
+          <div class="d-flex justify-content-between small">
+            <span>Суждение/Организованность (J)</span><span>{{ j }}%</span>
+          </div>
+          <div class="progress mb-1" style="height:8px;">
+            <div class="progress-bar" role="progressbar" style="width: {{ j }}%;"></div>
+          </div>
+          <div class="d-flex justify-content-between small text-body-secondary">
+            <span>Восприятие/Спонтанность (P)</span><span>{{ p }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="display-6 fw-bold">{{ type_code }}</div>
+            <span class="badge text-bg-light">личностный тип</span>
+          </div>
+          <div class="small text-body-secondary">
+            Итог формируется по четырём дихотомиям: E–I, S–N, T–F, J–P.
+            Проценты показывают вклад выбранной буквы в её паре.
+          </div>
+
+          <hr>
+
+          <h6 class="mb-2">Сводка ответов</h6>
+          <ul class="list-unstyled small m-0">
+            <li>E: {{ counts.get('E',0) }} • I: {{ counts.get('I',0) }}</li>
+            <li>S: {{ counts.get('S',0) }} • N: {{ counts.get('N',0) }}</li>
+            <li>T: {{ counts.get('T',0) }} • F: {{ counts.get('F',0) }}</li>
+            <li>J: {{ counts.get('J',0) }} • P: {{ counts.get('P',0) }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2 mt-4">
+    <a class="btn btn-light" href="{{ url_for('tests.index') }}">К тестам</a>
+    <a class="btn btn-outline-primary" href="{{ safe_url_for('student.dashboard') }}">В кабинет</a>
+  </div>
+</div>
+
+{% endblock %}

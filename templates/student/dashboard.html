@@ -1,0 +1,27 @@
+{% extends "student/layout.html" %}
+{% block student_content %}
+{% block content %}
+<div class="container py-4">
+  <div class="row g-3">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+          <h4 class="fw-bold mb-2">Начать тесты</h4>
+          <p class="text-body-secondary">Здесь будут ваши активные опросники и прогресс.</p>
+          <a class="btn btn-primary" href="{{ url_for('student.tests') }}">
+            <i class="bi bi-play-fill me-1"></i> Перейти к тестам
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+          <div class="fw-semibold mb-2">Подсказка AI-Orda</div>
+          <p class="small text-body-secondary mb-0">ИИ поможет с выбором профиля и вуза по вашим результатам.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
